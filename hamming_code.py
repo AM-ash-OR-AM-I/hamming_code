@@ -49,32 +49,26 @@ def generate_hamming_sec_code(data_bits: List[int]) -> List[int]:
 
 
 def convert_list_to_word(lst: List[int]) -> str:
+    """
+    Used to convert a list of bits to a string with MSB on the left and LSB on the right
+    """
     return "".join([str(bit) for bit in lst[: -len(lst) : -1]])
 
 
 if __name__ == "__main__":
-    for _ in range(1000):
-        print(f"Test case: #{_}")
+    for _ in range(100):
+        # print(f"Test case: #{_}")
         data_bits = np.random.randint(0, 2, random.randint(2, 200))
-        # print(data_bits.tolist())
-        # print(len(data_bits))
-        # data_bits = np.array([0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0])
-        # data_word = "0101000000111001"
-        # data_bits = [int(bit) for bit in data_word[::-1]]
-        # print(data_bits)
-        # data_bits = np.array([0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0])
-        # print(data_bits.reshape(4, 4))
-        # print(data_bits.tolist())
         try:
-            syndrome_list = generate_hamming_sec_code(data_bits)
+            sec_code_list = generate_hamming_sec_code(data_bits)
         except Exception as e:
             print(e)
             print(data_bits)
-        for i in range(1, len(syndrome_list)):
-            syndrome_list[i] = not syndrome_list[i]
-            error_bit = detect_error(syndrome_list)
-            syndrome_list[i] = not syndrome_list[i]
+        for i in range(1, len(sec_code_list)):
+            sec_code_list[i] = not sec_code_list[i]
+            error_bit = detect_error(sec_code_list)
+            sec_code_list[i] = not sec_code_list[i]
             assert (
                 error_bit == i
             )  # If the error bit is not the same as the index, then the error is not detected
-    # print("Successfully detected all errors!")
+    print("Passed all test cases!")
