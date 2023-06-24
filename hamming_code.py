@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 
 
-def detect_error(syndrome_word: List[int]) -> int:
+def error_syndrome(syndrome_word: List[int]) -> int:
     set_bits = [i for i, bit in enumerate(syndrome_word) if bit]
     if not set_bits:
         return 0
@@ -27,7 +27,7 @@ def generate_hamming_sec_code(data_bits: List[int]) -> List[int]:
 
     # Calculate the number of parity bits
     k = get_parity_bits(n)
-    syndrome_list = [0] * (n + k + 1)
+    sec_code = [0] * (n + k + 1)
     check_bit_locations = set(2**i for i in range(k))
     index = 3
 
@@ -35,17 +35,17 @@ def generate_hamming_sec_code(data_bits: List[int]) -> List[int]:
     for bit in data_bits:
         if index in check_bit_locations:
             index += 1
-        syndrome_list[index] = bit
+        sec_code[index] = bit
         index += 1
 
-    # Calculate the parity bits
-    check_bits = bin(detect_error(syndrome_list))[2:].zfill(k)[::-1]
+    # Calculate the parity bits (syndrome word)
+    syndrome_word = bin(error_syndrome(sec_code))[2:].zfill(k)[::-1]
 
     # Insert the parity bits
-    for i, bit in enumerate(check_bits):
-        syndrome_list[2**i] = int(bit)
+    for i, bit in enumerate(syndrome_word):
+        sec_code[2**i] = int(bit)
 
-    return syndrome_list
+    return sec_code
 
 
 def convert_list_to_word(lst: List[int]) -> str:
@@ -66,7 +66,7 @@ if __name__ == "__main__":
             print(data_bits)
         for i in range(1, len(sec_code_list)):
             sec_code_list[i] = not sec_code_list[i]
-            error_bit = detect_error(sec_code_list)
+            error_bit = error_syndrome(sec_code_list)
             sec_code_list[i] = not sec_code_list[i]
             assert (
                 error_bit == i
