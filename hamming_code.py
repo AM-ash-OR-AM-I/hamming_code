@@ -39,10 +39,11 @@ def generate_hamming_sec_code(data_bits: List[int]) -> List[int]:
         index += 1
 
     # Calculate the parity bits (syndrome word)
-    syndrome_word = bin(error_syndrome(sec_code))[2:].zfill(k)[::-1]
+    parity_bits = bin(error_syndrome(sec_code))[2:].zfill(k)[::-1]
+    print("Check bits in order of MSB -> LSB: ", parity_bits[::-1])
 
     # Insert the parity bits
-    for i, bit in enumerate(syndrome_word):
+    for i, bit in enumerate(parity_bits):
         sec_code[2**i] = int(bit)
 
     return sec_code
@@ -55,7 +56,11 @@ def convert_list_to_word(lst: List[int]) -> str:
     return "".join([str(bit) for bit in lst[: -len(lst) : -1]])
 
 
-if __name__ == "__main__":
+def convert_word_to_list(word: str) -> List[int]:
+    return [int(bit) for bit in word[::-1]]
+
+
+def main():
     for _ in range(100):
         # print(f"Test case: #{_}")
         data_bits = np.random.randint(0, 2, random.randint(2, 200))
@@ -72,3 +77,10 @@ if __name__ == "__main__":
                 error_bit == i
             )  # If the error bit is not the same as the index, then the error is not detected
     print("Passed all test cases!")
+
+
+if __name__ == "__main__":
+    # main()
+    data_bits = convert_word_to_list("11000010")
+    sec_code_list = generate_hamming_sec_code(data_bits)
+    print(convert_list_to_word(sec_code_list))
